@@ -1,0 +1,4 @@
+[submodule "EPay"]
+	path = EPay
+	url = https://github.com/mhaajunior/EPay.git
+	branch = master
