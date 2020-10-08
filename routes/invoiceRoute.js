@@ -31,6 +31,7 @@ module.exports = (app) => {
     try {
       await mailer.send();
       await invoice.save();
+      res.send(req.user);
     } catch (err) {
       res.status(422).send(err);
     }
