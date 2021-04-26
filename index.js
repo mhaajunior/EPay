@@ -3,9 +3,12 @@ const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const keys = require('./config/keys');
 require('./models/User');
 require('./models/Invoice');
+require('./models/Payment');
+require('./models/Evidence');
 require('./services/passport');
 
 mongoose.connect(keys.mongoURI, {
@@ -15,6 +18,7 @@ mongoose.connect(keys.mongoURI, {
 
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(
   cookieSession({
@@ -26,7 +30,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 require('./routes/authRoutes')(app);
-require('./routes/invoiceRoute')(app);
+require('./routes/invoiceRoutes')(app);
+require('./routes/paymentRoutes')(app);
+require('./routes/evidenceRoutes')(app);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'));

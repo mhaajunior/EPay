@@ -13,16 +13,30 @@ module.exports = (app) => {
   });
 
   app.post('/api/invoices', requireLogin, async (req, res) => {
-    const { title, subject, body, to, amount } = req.body;
+    const {
+      title,
+      body,
+      to,
+      amount,
+      phone,
+      mail,
+      smail,
+      bitaddress,
+    } = req.body;
 
     const invoice = new Invoice({
       title,
       body,
-      subject,
       to,
       from: req.user.email,
       fromName: req.user.name,
+      fullAmount: amount,
       amount,
+      phone,
+      paypalmail: mail,
+      stripemail: smail,
+      bitcoinAddress: bitaddress,
+      pending: 0,
       dateSent: Date.now(),
     });
 
@@ -35,5 +49,25 @@ module.exports = (app) => {
     } catch (err) {
       res.status(422).send(err);
     }
+  });
+
+  app.get('/api/owninvoices', requireLogin, async (req, res) => {
+    const invoices = await Invoice.find({ from: req.user.email });
+    res.send(invoices);
+  });
+
+  app.delete('/api/:id/deleteinvoice', requireLogin, async (req, res) => {
+    const { id } = req.params;
+    Invoice.deleteOne(
+      {
+        _id: id,
+      },
+      (err) => {
+        if (err) throw err;
+        console.log('1 document deleted');
+      }
+    );
+
+    res.send('success');
   });
 };
